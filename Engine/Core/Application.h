@@ -8,8 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "Core/Layer.h"
-#include "Core/Window.h"
+#include "Engine/Core/Device.h"
+#include "Engine/Core/Layer.h"
+#include "Engine/Core/Window.h"
 
 namespace brnCore {
 
@@ -56,18 +57,23 @@ class Application {
         return nullptr;
     }
 
+    std::shared_ptr<Window> GetWindow() const { return m_Window; }
+    std::shared_ptr<Device> GetGpuDevice() const { return m_GpuDevice; }
+
     static Application &Get();
     static float        GetTime();
 
   private:
-    ApplicationSpecification                                        m_AppSpec;
-    std::unique_ptr<Window>                                         m_Window;
-    std::unique_ptr<SDL_GPUDevice, decltype(&SDL_DestroyGPUDevice)> m_GpuDevice;
+    ApplicationSpecification m_AppSpec;
+    std::shared_ptr<Window>  m_Window;
+    std::shared_ptr<Device>  m_GpuDevice;
 
     std::vector<std::unique_ptr<Layer>> m_LayerStack;
 
     SDL_AppResult OnUpdate(float lastTime);
     SDL_AppResult OnRender();
     SDL_AppResult OnQuit();
+
+    friend class Layer;
 };
 } // namespace brnCore

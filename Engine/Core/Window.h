@@ -19,7 +19,8 @@ struct WindowSpecification {
 
 class Window {
   public:
-    Window(const WindowSpecification &specification = WindowSpecification());
+    explicit Window(
+        const WindowSpecification &specification = WindowSpecification());
     ~Window();
 
     void Create();
@@ -31,12 +32,11 @@ class Window {
 
     bool ShouldClose(const SDL_EventType &event) const;
 
-    SDL_Window *GetWindow() const { return m_Window.get(); }
-    // SDL_Window *GetWindow() const { return m_Window; }
+    SDL_Window *GetHandle() const { return m_Window.get(); }
+
   private:
-    WindowSpecification m_specification;
+    WindowSpecification                                       m_specification;
     std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> m_Window;
-    //std::shared_ptr<SDL_Window> m_Window;
 };
 
 } // namespace brnCore

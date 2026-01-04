@@ -5,7 +5,7 @@
 namespace brnCore {
 
 Window::Window(const WindowSpecification &specification)
-    : m_specification(specification) {}
+    : m_specification(specification), m_Window(nullptr, &SDL_DestroyWindow) {}
 
 Window::~Window() { Destroy(); }
 

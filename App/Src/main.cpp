@@ -1,5 +1,6 @@
-#include "Core/Window.h"
+#include "AppLayer.h"
 
+#include "Engine/Core/Window.h"
 #include "Engine/Core/Application.h"
 
 int main(int argc, char **argv) {
@@ -15,9 +16,9 @@ int main(int argc, char **argv) {
     appSpec.appidentifier = "com.brain.brian-app";
     appSpec.WindowSpec    = windowSpec;
 
-    auto *app = new brnCore::Application{appSpec};
-
-    app->Run();
+    brnCore::Application app(appSpec);
+    app.PushLayer<AppLayer>();
+    app.Run();
 
     return 0;
 }
