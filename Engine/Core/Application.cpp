@@ -93,7 +93,10 @@ SDL_AppResult Application::Event(const SDL_Event *event) {
     }
 }
 
-void Application::Quit(const SDL_AppResult result) { m_GpuDevice->Destroy(); }
+void Application::Quit(const SDL_AppResult result) {
+    m_GpuDevice->Destroy();
+    m_Window->Destroy();
+}
 
 SDL_AppResult Application::OnQuit() { return SDL_APP_SUCCESS; }
 
