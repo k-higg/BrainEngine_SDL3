@@ -16,7 +16,9 @@ namespace brnCore {
 static Application *s_Application = nullptr;
 
 Application::Application(const ApplicationSpecification &appSpec)
-    : m_Window(nullptr), m_GpuDevice(nullptr), m_AppSpec(appSpec) {}
+    : m_Window(nullptr), m_GpuDevice(nullptr), m_AppSpec(appSpec) {
+    s_Application = this;
+}
 
 SDL_AppResult Application::Init() {
     SDL_SetAppMetadata(m_AppSpec.appname.c_str(),
@@ -55,6 +57,18 @@ void Application::Run() {
 
     bool b_Run = true;
     while (b_Run) {
+
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
+                b_Run = false;
+            }
+
+            for (auto &layer : m_LayerStack) {
+                layer->OnEvent(event);
+            }
+        }
+
         float currentTime = GetTime();
 
         float    deltaTime = (currentTime - lastTime) / 1000.0f;

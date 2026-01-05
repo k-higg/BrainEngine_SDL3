@@ -5,9 +5,7 @@
 #include <SDL3/SDL_gpu.h>
 #include <SDL3/SDL_init.h>
 
-AppLayer::AppLayer() {
-    std::println("Created new AppLayer\n");
-}
+AppLayer::AppLayer() { std::println("Created new AppLayer\n"); }
 
 AppLayer::~AppLayer() {}
 

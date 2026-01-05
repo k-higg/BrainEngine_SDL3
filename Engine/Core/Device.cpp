@@ -76,7 +76,7 @@ void Device::Create() {
         m_GpuDevice.get(),
         brnCore::Application::Get().GetWindow()->GetHandle(),
         SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
-        SDL_GPU_PRESENTMODE_VSYNC);
+        presentMode);
 }
 
 void Device::Destroy() {
