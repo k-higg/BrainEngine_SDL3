@@ -13,49 +13,33 @@ find_package(imgui CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/Core/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Core/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Core/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Core/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ImGui/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ImGui/*.h"
 )
-
-file(GLOB_RECURSE IMGUI_SRC_DIR 
-     "${CMAKE_CURRENT_SOURCE_DIR}/Vendor/vcpkg/buildtrees/imgui/src/*-docking-*/backends/imgui_impl_glfw.cpp"
-)
-
-if(IMGUI_SRC_DIR)
-    get_filename_component(BACKEND_PATH "${IMGUI_SRC_DIR}" DIRECTORY)
-    message(STATUS "Found ImGui Backends at: ${BACKEND_PATH}")
-    
-    set(IMGUI_BACKEND_SOURCES 
-        "${BACKEND_PATH}/imgui_impl_glfw.cpp"
-        "${BACKEND_PATH}/imgui_impl_opengl3.cpp"
-    )
-else()
-    message(FATAL_ERROR "Could not locate ImGui backend sources in buildtrees.")
-endif()
 
 add_library(Engine STATIC)
 
 target_include_directories(Engine
-    PUBLIC
+        PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/.."
-        "${IMGUI_BACKEND_DIR}"
-    PRIVATE
+        PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 target_sources(Engine PRIVATE
-    ${SOURCES}
-    ${IMGUI_BACKEND_SOURCES}
+        ${SOURCES}
 )
 
 target_link_libraries(Engine PUBLIC
-    fmt::fmt
-    SDL3::SDL3
-    $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>
-    SDL3_ttf::SDL3_ttf
-    imgui::imgui
-    glad::glad
-    glfw
-    OpenGL::GL
-    glm::glm
+        fmt::fmt
+        SDL3::SDL3
+        $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>
+        SDL3_ttf::SDL3_ttf
+        imgui::imgui
+        glad::glad
+        glfw
+        OpenGL::GL
+        glm::glm
 )

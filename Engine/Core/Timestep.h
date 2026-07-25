@@ -1,6 +1,6 @@
 #pragma once
 
-namespace brnCore {
+namespace Brain {
 class Timestep {
   public:
     Timestep(float time = 0.0f) : m_Time(time) {}

@@ -6,7 +6,7 @@
 
 #include <print>
 
-class AppLayer : public brnCore::Layer {
+class AppLayer : public Brain::Layer {
   public:
     AppLayer();
     virtual ~AppLayer();

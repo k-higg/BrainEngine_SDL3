@@ -4,19 +4,19 @@
 #include "Engine/Core/Application.h"
 
 int main(int argc, char **argv) {
-    brnCore::WindowSpecification windowSpec;
+    Brain::window_spec_t windowSpec;
     windowSpec.Title  = "Brain";
     windowSpec.Width  = 1280;
     windowSpec.Height = 720;
     windowSpec.Flags  = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN;
 
-    brnCore::ApplicationSpecification appSpec;
+    Brain::application_spec_t appSpec;
     appSpec.appname       = "Brain";
     appSpec.version       = "1.0.0";
-    appSpec.appidentifier = "com.brain.brian-app";
+    appSpec.app_identifier = "com.brain.brian-app";
     appSpec.WindowSpec    = windowSpec;
 
-    brnCore::Application app(appSpec);
+    Brain::Application app(appSpec);
     app.PushLayer<AppLayer>();
     app.Run();
 

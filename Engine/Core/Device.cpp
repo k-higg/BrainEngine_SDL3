@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <vector>
 
-namespace brnCore {
+namespace Brain {
 
 Device::Device() : m_GpuDevice(nullptr, &SDL_DestroyGPUDevice) {}
 Device::~Device() { Destroy(); }
@@ -32,6 +32,7 @@ void Device::Create() {
             break;
         }
     }
+
 #pragma endregion
 
     /*
@@ -39,6 +40,7 @@ void Device::Create() {
      * if no preferred driver is found
      * use nullptr which auto selects the driver that the system supports
      */
+
     m_GpuDevice.reset(SDL_CreateGPUDevice(
         SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL |
             SDL_GPU_SHADERFORMAT_MSL,
@@ -46,7 +48,7 @@ void Device::Create() {
         preferredDriver.size() ? preferredDriver.c_str() : nullptr));
 
     if (!m_GpuDevice) {
-        SDL_LogError(brnCore::Application::Get().APP_LOG_CATEGORY_GENERIC,
+        SDL_LogError(Brain::Application::Get().APP_LOG_CATEGORY_GENERIC,
                      "Failed to Create a GPU Device: %s",
                      SDL_GetError());
         exit(1);
@@ -55,8 +57,8 @@ void Device::Create() {
 
     if (!SDL_ClaimWindowForGPUDevice(
             m_GpuDevice.get(),
-            brnCore::Application::Get().GetWindow()->GetHandle())) {
-        SDL_LogError(brnCore::Application::Get().APP_LOG_CATEGORY_GENERIC,
+            Brain::Application::Get().GetWindow()->GetHandle())) {
+        SDL_LogError(Brain::Application::Get().APP_LOG_CATEGORY_GENERIC,
                      "Failed to Claim Window for GPU Device: %s",
                      SDL_GetError());
         exit(1);
@@ -67,14 +69,14 @@ void Device::Create() {
 
     if (SDL_WindowSupportsGPUPresentMode(
             m_GpuDevice.get(),
-            brnCore::Application::Get().GetWindow()->GetHandle(),
-            presentMode)) {
+            Brain::Application::Get().GetWindow()->GetHandle(),
+            SDL_GPU_PRESENTMODE_MAILBOX)) {
         presentMode = SDL_GPU_PRESENTMODE_MAILBOX;
-    }
+    } 
 
     SDL_SetGPUSwapchainParameters(
         m_GpuDevice.get(),
-        brnCore::Application::Get().GetWindow()->GetHandle(),
+        Brain::Application::Get().GetWindow()->GetHandle(),
         SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
         presentMode);
 }
@@ -84,7 +86,7 @@ void Device::Destroy() {
         SDL_WaitForGPUIdle(m_GpuDevice.get());
         SDL_ReleaseWindowFromGPUDevice(
             m_GpuDevice.get(),
-            brnCore::Application::Get().GetWindow()->GetHandle());
+            Brain::Application::Get().GetWindow()->GetHandle());
     }
     m_GpuDevice = nullptr;
 }

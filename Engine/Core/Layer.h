@@ -1,14 +1,17 @@
 #pragma once
 
+#include <SDL3/SDL.h>
 #include <SDL3/SDL_events.h>
 
 #include <memory>
 
-namespace brnCore {
+namespace Brain {
 class Layer {
   public:
     virtual ~Layer() = default;
 
+    virtual void OnAttach() {}
+    virtual void OnDetach() {}
     virtual void OnEvent(SDL_Event &event) {}
     virtual void OnUpdate(float ts) {}
     virtual void OnRender() {}

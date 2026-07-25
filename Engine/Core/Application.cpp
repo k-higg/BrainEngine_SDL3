@@ -7,12 +7,18 @@
 #include <SDL3/SDL_gpu.h>
 #include <SDL3/SDL_init.h>
 
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_opengl3.h>
+
 #include <cassert>
 #include <string>
 
 #include "Timestep.h"
+#include "ImGui/ImGuiLayer.h"
 
-namespace brnCore {
+
+namespace Brain {
 static Application *s_Application = nullptr;
 
 Application::Application(const ApplicationSpecification &appSpec)
@@ -23,7 +29,7 @@ Application::Application(const ApplicationSpecification &appSpec)
 SDL_AppResult Application::Init() {
     SDL_SetAppMetadata(m_AppSpec.appname.c_str(),
                        m_AppSpec.version.c_str(),
-                       m_AppSpec.appidentifier.c_str());
+                       m_AppSpec.app_identifier.c_str());
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_LogError(APP_LOG_CATEGORY_GENERIC,
@@ -32,10 +38,10 @@ SDL_AppResult Application::Init() {
         return SDL_APP_FAILURE;
     }
 
-    m_Window = std::make_unique<Window>(m_AppSpec.WindowSpec);
+    m_Window = std::make_shared<Window>(m_AppSpec.WindowSpec);
     m_Window->Create();
 
-    m_GpuDevice = std::make_unique<Device>();
+    m_GpuDevice = std::make_shared<Device>();
     m_GpuDevice->Create();
 
     if (!SDL_ShowWindow(m_Window->GetHandle())) {
@@ -44,6 +50,8 @@ SDL_AppResult Application::Init() {
                      SDL_GetError());
         return SDL_APP_FAILURE;
     }
+
+    PushLayer<ImGuiLayer>();
 
     return SDL_APP_CONTINUE;
 }
@@ -60,18 +68,21 @@ void Application::Run() {
 
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
+            // TODO: obviously needs to be reworked because it could return
+            // success for things other than wanting to close the window/quit.
+            // Unless this is only for application events.
+            if (const auto result = Event(&event); result == SDL_APP_SUCCESS) {
                 b_Run = false;
             }
 
-            for (auto &layer : m_LayerStack) {
+            for (const auto &layer : m_LayerStack) {
                 layer->OnEvent(event);
             }
         }
 
-        float currentTime = GetTime();
+        const float currentTime = GetTime();
 
-        float    deltaTime = (currentTime - lastTime) / 1000.0f;
+        const float    deltaTime = (currentTime - lastTime) / 1000.0f;
         Timestep ts(deltaTime);
         lastTime = currentTime;
 
@@ -93,10 +104,9 @@ void Application::Run() {
 // TODO: Either delete this function or replace Quit
 void Application::Stop() { Quit(SDL_APP_SUCCESS); }
 
-// TODO: Create own event system or incorporate SDL's into project
 SDL_AppResult Application::Event(const SDL_Event *event) {
     switch (event->type) {
-    case SDLK_Q || SDL_EVENT_QUIT:
+    case SDL_EVENT_QUIT:
         return OnQuit();
     case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
         if (SDL_GetWindowID(m_Window->GetHandle()) == event->window.windowID) {

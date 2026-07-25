@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace brnCore {
+namespace Brain {
 
 class Device {
   public:

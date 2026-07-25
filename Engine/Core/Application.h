@@ -12,14 +12,14 @@
 #include "Engine/Core/Layer.h"
 #include "Engine/Core/Window.h"
 
-namespace brnCore {
+namespace Brain {
 
-struct ApplicationSpecification {
+typedef struct ApplicationSpecification {
     std::string         appname       = "BrianEngine SDL";
     std::string         version       = "1.0.0";
-    std::string         appidentifier = "com.brainengine.brainengine-sdl";
+    std::string         app_identifier = "com.brainengine.brainengine-sdl";
     WindowSpecification WindowSpec;
-};
+} application_spec_t;
 
 class Application {
   public:
@@ -43,7 +43,13 @@ class Application {
     template <typename TLayer>
         requires(std::is_base_of_v<Layer, TLayer>)
     void PushLayer() {
-        m_LayerStack.push_back(std::make_unique<TLayer>());
+        auto layer = std::make_unique<TLayer>();
+
+        if (m_Window && m_Window->GetGLContext()) {
+            layer->OnAttach();
+        }
+
+        m_LayerStack.push_back(std::move(layer));
     }
 
     template <typename TLayer>
@@ -57,14 +63,14 @@ class Application {
         return nullptr;
     }
 
-    std::shared_ptr<Window> GetWindow() const { return m_Window; }
-    std::shared_ptr<Device> GetGpuDevice() const { return m_GpuDevice; }
+    [[nodiscard]] std::shared_ptr<Window> GetWindow() const { return m_Window; }
+    [[nodiscard]] std::shared_ptr<Device> GetGpuDevice() const { return m_GpuDevice; }
 
     static Application &Get();
     static float        GetTime();
 
   private:
-    ApplicationSpecification m_AppSpec;
+    application_spec_t m_AppSpec;
     std::shared_ptr<Window>  m_Window;
     std::shared_ptr<Device>  m_GpuDevice;
 
