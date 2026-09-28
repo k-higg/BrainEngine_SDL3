@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_events.h>
@@ -90,9 +91,35 @@ void Application::Run() {
             layer->OnUpdate(ts);
         }
 
-        // NOTE: rendering can be done elsewhere (eg. render thread)
+        // OpenGL Frame
+        const auto framebufferSize = m_Window->GetFramebufferSize();
+    
+        glViewport(0, 0, static_cast<GLsizei>(framebufferSize.x), static_cast<GLsizei>( framebufferSize.y));
+    
+        glClearColor(0.1f, 0.1f, 0.1f, 1.f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        ImGuiLayer *imguiLayer = nullptr;
+
+        for (const auto &layer : m_LayerStack) {
+            if (auto *layerPtr = dynamic_cast<ImGuiLayer*>(layer.get())) {
+                imguiLayer = layerPtr;
+                break;
+            }
+        }
+
+        if (imguiLayer) {
+            imguiLayer->Begin();
+        }
+
         for (const std::unique_ptr<Layer> &layer : m_LayerStack) {
-            layer->OnRender();
+            if (layer.get() != imguiLayer) {
+                layer->OnRender();
+            }
+        }
+
+        if (imguiLayer) {
+            imguiLayer->End();
         }
 
         m_Window->Update();

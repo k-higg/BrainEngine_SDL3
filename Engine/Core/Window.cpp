@@ -1,5 +1,7 @@
 #include "Window.h"
 
+#include <glad/glad.h>
+
 #include <SDL3/SDL_log.h>
 
 namespace Brain {
@@ -36,6 +38,12 @@ void Window::Create() {
         exit(1);
     }
     SDL_GL_MakeCurrent(m_Window.get(), m_GLContext);
+
+    if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+        SDL_LogError(SDL_LOG_CATEGORY_CUSTOM, "Failed to initialized GLAD");
+        exit(1);
+    }
+
     SDL_GL_SetSwapInterval(1); // vsync
 }
 

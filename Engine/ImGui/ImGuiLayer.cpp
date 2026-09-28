@@ -58,20 +58,7 @@ namespace Brain {
         ImGui_ImplSDL3_ProcessEvent(&event);
     }
 
-    void ImGuiLayer::OnRender() {
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplSDL3_NewFrame();
-        ImGui::NewFrame();
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-        }
-    }
+    void ImGuiLayer::OnRender() {}
 
     void ImGuiLayer::Begin() {
         ImGui_ImplOpenGL3_NewFrame();
@@ -84,7 +71,9 @@ namespace Brain {
 
         ImGuiIO& io = ImGui::GetIO();
         Application& app = Application::Get();
-        io.DisplaySize = ImVec2((float)app.GetWindow()->GetWidth(), (float)app.GetWindow()->GetHeight());
+        
+        const auto framebufferSize = app.GetWindow()->GetFramebufferSize();
+        io.DisplaySize = ImVec2(framebufferSize.x, framebufferSize.y);
 
         // Rendering
         ImGui::Render();
